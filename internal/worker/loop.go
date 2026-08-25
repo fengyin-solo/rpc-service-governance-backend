@@ -20,13 +20,16 @@ func NewLoop(interval time.Duration) *Loop {
 	return &Loop{interval: interval, started: make(chan struct{}), stop: make(chan struct{}), done: make(chan struct{})}
 }
 
-func (l *Loop) Run(_ context.Context) {
+func (l *Loop) Run(ctx context.Context) {
 	defer close(l.done)
 	ticker := time.NewTicker(l.interval)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-l.stop:
+			return
+		case <-ctx.Done():
+			// 请求已取消，立即退出，不再发起后续调用。
 			return
 		case <-ticker.C:
 			if l.calls.Add(1) == 1 {

@@ -15,7 +15,7 @@ type Scheduler struct{ runner Runner }
 
 func New(runner Runner) *Scheduler { return &Scheduler{runner: runner} }
 
-func (s *Scheduler) Start(context.Context) { go s.runner.Run(context.Background()) }
+func (s *Scheduler) Start(ctx context.Context) { go s.runner.Run(ctx) }
 
 func (s *Scheduler) Shutdown(timeout time.Duration) bool {
 	s.runner.Stop()
